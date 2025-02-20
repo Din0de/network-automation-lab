@@ -1,0 +1,40 @@
+name: Network Automation Workflow
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'ansible/**'
+      - '.github/workflows/network-automation.yaml'
+  schedule:
+    # Execute this workflow every 30 minutes
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+jobs:
+  apply-network-config:
+    # This workflow runs on a self-hosted runner labeled "network-lab-runner"
+    runs-on:
+      - self-hosted
+      - network-lab-runner
+
+    steps:
+      - name: Retrieve Source Code
+        uses: actions/checkout@v3
+
+      - name: Execute Ansible Playbook
+        env:
+          # Disable strict host key checking for Ansible
+          ANSIBLE_HOST_KEY_CHECKING: "False"
+        run: |
+          ansible-playbook ansible/configure_devices.yaml -i ansible/hosts --extra-vars "ansible_ssh_pass=${{ secrets.DEVICE_PASSWORD }} ansible_user=${{ secrets.DEVICE_USERNAME }}"
+
+      - name: Save Configuration Backups
+        run: |
+          # Stage backup files from the ansible/backups folder
+          git add ansible/backups
+          # Commit changes with a descriptive message
+          git commit -m "Network configuration backup"
+          # Push backup files to the repository using your GitHub token
+          git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/Din0de/network-automation-lab.git"
