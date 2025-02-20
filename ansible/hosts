@@ -1,5 +1,5 @@
 [routers]
-router1 ansible_ssh_hosts=10.0.0.2 ansible_user=$DEVICE_USERNAME ansible_ssh_pass=$DEVICE_PASSWORD
-router2 ansible_ssh_hosts=10.0.0.3 ansible_user=$DEVICE_USERNAME ansible_ssh_pass=$DEVICE_PASSWORD
+router1 ansible_ssh_host=10.0.0.2 ansible_user=$DEVICE_USERNAME ansible_ssh_pass=$DEVICE_PASSWORD
+router2 ansible_ssh_host=10.0.0.3 ansible_user=$DEVICE_USERNAME ansible_ssh_pass=$DEVICE_PASSWORD
 
 # Hosts IP address and uses secret of DEVICE_USERNAME and DEVICE_PASSWORD
