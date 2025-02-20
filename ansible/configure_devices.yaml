@@ -1,22 +1,25 @@
-- name: SDN A2
+- name: Configure Cisco Routers
   hosts: routers
-  gather_facts: false
+  gather_facts: false  # We don't need system facts for simple config changes
 
   vars:
-    ansible_connection: ansible.netcommon.network_cli
+    ansible_connection: ansible.netcommon.network_cli  # Use network_cli to connect to the router
     ansible_network_os: cisco.ios.ios
     ansible_become: yes
     ansible_become_method: enable
 
   tasks:
-    - name: Modify Router Banner
+    - name: Update Router MOTD Banner
       ios_config:
         lines:
-          - banner motd ^ Router {{ inventory_hostname }} ^
+          # This line sets the 'Message of the Day' banner on the router
+          - banner motd ^ Welcome to router {{ inventory_hostname }}. Unauthorized access is prohibited! ^
 
-    - name: Backup Running Config #This is the backup runnign config being stored in /backups
+    - name: Create a Backup of the Running Configuration
       ios_config:
-        backup: yes
+        backup: yes  # Enables the creation of a backup file
         backup_options:
-          filename: "running-config-{{ inventory_hostname }}" 
+          # The filename is dynamically generated using the device's hostname
+          filename: "backup-config-{{ inventory_hostname }}"
+          # The directory path where the backup file will be saved
           dir_path: "ansible/backups"
